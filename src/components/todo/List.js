@@ -27,6 +27,13 @@ export default function List(props) {
       )
     );
   }, [props.list, props.incomplete]);
+  useEffect(() => {
+    let start = (currentPage - 1) * setting.itemsPerPage;
+    let end = start + setting.numberDisplatBerScreen;
+    setactiveList(
+      (setting.show ? props.list : props.incomplete).slice(start, end)
+    );
+  }, [currentPage, setting.numberDisplatBerScreen]);
 
   const changePage = (pageNum) => {
     if (pageNum !== currentPage) setCurrentPage(pageNum);
