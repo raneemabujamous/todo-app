@@ -68,6 +68,7 @@ const ToDo = () => {
         incomplete={incomplete}
         list={list}
         toggleComplete={toggleComplete}
+        deleteItem={deleteItem}
       />
       {completedItem && (
         <Completecard completed={completed} arrayComplete={arrayComplete} />
