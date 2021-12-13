@@ -1,22 +1,34 @@
-import React, { Component } from "react";
-export const { settingsContext } = React.createContext();
+import React, { useState, useEffect } from "react";
+export const settingsContext = React.createContext();
+function Settings(props) {
+  const [show, setShow] = useState(true);
+  const [numberDisplatBerScreen, setnumberDisplatBerScreen] = useState(2);
+  const [sort, setsort] = useState("string");
+  const state = {
+    show,
+    setShow,
+    numberDisplatBerScreen,
+    setnumberDisplatBerScreen,
+    sort,
+    setsort,
+  };
+  useEffect(() => {
+    let stringArray = localStorage.getItem("Formsetting");
+    let objectArray = JSON.parse(stringArray);
 
-export default class Settings extends Component {
-  constructor(props) {
-    super(props);
+    if (objectArray) {
+      setnumberDisplatBerScreen(Number(objectArray.numberDisplatBerScreen));
+    }
+    localStorage.clear();
+  }, []);
 
-    this.state = {
-      show: true,
-      numberDisplatBerScreen: 5,
-      sort: "string",
-    };
-  }
-
-  render() {
-    return (
-      <settingsContext.Provider value={this.state}>
-        {this.props.children}
+  return (
+    <div>
+      <settingsContext.Provider value={state}>
+        {props.children}
       </settingsContext.Provider>
-    );
-  }
+    </div>
+  );
 }
+
+export default Settings;

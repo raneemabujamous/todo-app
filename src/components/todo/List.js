@@ -1,6 +1,8 @@
 import React from "react";
 import { useContext, useState, useEffect } from "react";
 import { settingsContext } from "../../settings/context";
+import { Button, Card, Elevation } from "@blueprintjs/core";
+
 export default function List(props) {
   const setting = useContext(settingsContext);
   const [currentPage, setCurrentPage] = useState(1);
@@ -13,6 +15,7 @@ export default function List(props) {
   const [pageNum, setPagesNum] = useState(
     Math.ceil(props.list.length / setting.numberDisplatBerScreen)
   );
+  console.log(Math.ceil(setting.numberDisplatBerScreen));
   useEffect(() => {
     setActiveList(
       (setting.show ? props.list : props.incomplete).slice(
@@ -28,9 +31,9 @@ export default function List(props) {
     );
   }, [props.list, props.incomplete]);
   useEffect(() => {
-    let start = (currentPage - 1) * setting.itemsPerPage;
+    let start = (currentPage - 1) * setting.numberDisplatBerScreen;
     let end = start + setting.numberDisplatBerScreen;
-    setactiveList(
+    setActiveList(
       (setting.show ? props.list : props.incomplete).slice(start, end)
     );
   }, [currentPage, setting.numberDisplatBerScreen]);
@@ -39,20 +42,21 @@ export default function List(props) {
     if (pageNum !== currentPage) setCurrentPage(pageNum);
     console.log(currentPage);
   };
+
   const Page = () => {
     let pageArr = [];
     if (currentPage > 1) {
       pageArr.push(
         <button
           onClick={() => {
-            changePage(changePage - 1);
+            changePage(currentPage - 1);
           }}
         >
           previous
         </button>
       );
     }
-    for (let i = 0; i <= pageNum; i++) {
+    for (let i = 1; i <= pageNum; i++) {
       pageArr.push(
         <button
           onClick={() => {
@@ -65,7 +69,7 @@ export default function List(props) {
       );
     }
     if (currentPage <= pageNum) {
-      pageNum.push(
+      pageArr.push(
         <button
           onClick={() => {
             changePage(currentPage + 1);
@@ -77,6 +81,7 @@ export default function List(props) {
     }
     return <div>{pageArr}</div>;
   };
+
   return (
     <div>
       {" "}
@@ -112,7 +117,7 @@ export default function List(props) {
           </Card>
         ))}
       </Card>
-      <Pages />
+      <Page /> <p> current Page{currentPage}</p>
     </div>
   );
 }
