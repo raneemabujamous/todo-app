@@ -114,6 +114,12 @@ export default function List(props) {
             >
               Complete : {item.complete.toString()}
             </Button>
+            <Button
+              onClick={() => props.deleteItem(item.id)}
+              type="submit"
+              intent="danger"
+              text="delete"
+            />
           </Card>
         ))}
       </Card>
