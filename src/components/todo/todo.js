@@ -6,7 +6,7 @@ import Formtodo from "./FormTodo.js";
 import Completecard from "./completeCard.js";
 import FormSetting from "./FormSetting.js";
 import Header from "../Header.js";
-
+import Auth from "../auth/auth";
 const ToDo = () => {
   const [list, setList] = useState([]);
   const [incomplete, setIncomplete] = useState([]);
@@ -57,19 +57,76 @@ const ToDo = () => {
   };
   return (
     <>
-      <Formtodo
-        handleSubmit={handleSubmit}
-        handleChange={handleChange}
-        incomplete={incomplete}
-        completed={completed}
-        changeSettingContext={changeSettingContext}
-      />
-      <List
-        incomplete={incomplete}
-        list={list}
-        toggleComplete={toggleComplete}
-        deleteItem={deleteItem}
-      />
+      <Auth capability="create">
+        {/* <Formtodo
+          handleSubmit={handleSubmit}
+          handleChange={handleChange}
+          incomplete={incomplete}
+          completed={completed}
+          changeSettingContext={changeSettingContext}
+        /> */}
+        <div>
+          {" "}
+          <header>
+            <h1>To Do List: {incomplete} items pending</h1>
+          </header>
+          <form onSubmit={handleSubmit}>
+            <h2>Add To Do Item</h2>
+
+            <label>
+              <span>To Do Item</span>
+              <input
+                onChange={handleChange}
+                name="text"
+                type="text"
+                placeholder="Item Details"
+              />
+            </label>
+
+            <label>
+              <span>Assigned To</span>
+              <input
+                onChange={handleChange}
+                name="assignee"
+                type="text"
+                placeholder="Assignee Name"
+              />
+            </label>
+
+            <label>
+              <span>Difficulty</span>
+              <input
+                onChange={handleChange}
+                defaultValue={3}
+                type="range"
+                min={1}
+                max={5}
+                name="difficulty"
+              />
+            </label>
+
+            <label>
+              <button type="submit">Add Item</button>
+            </label>
+          </form>
+          <label>
+            <button type="submit" onClick={completed}>
+              completed item
+            </button>
+            {/* <button type="submit" onClick={props.changeSettingContext}>
+          change setting
+        </button> */}
+          </label>
+        </div>
+      </Auth>
+      <Auth capability="read">
+        <List
+          incomplete={incomplete}
+          list={list}
+          toggleComplete={toggleComplete}
+          deleteItem={deleteItem}
+        />
+      </Auth>
       {completedItem && (
         <Completecard completed={completed} arrayComplete={arrayComplete} />
       )}

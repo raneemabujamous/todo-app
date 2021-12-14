@@ -2,7 +2,7 @@ import React from "react";
 import { useContext, useState, useEffect } from "react";
 import { settingsContext } from "../../settings/context";
 import { Button, Card, Elevation } from "@blueprintjs/core";
-
+import Auth from "../auth/login";
 export default function List(props) {
   const setting = useContext(settingsContext);
   const [currentPage, setCurrentPage] = useState(1);
@@ -114,12 +114,14 @@ export default function List(props) {
             >
               Complete : {item.complete.toString()}
             </Button>
-            <Button
-              onClick={() => props.deleteItem(item.id)}
-              type="submit"
-              intent="danger"
-              text="delete"
-            />
+            <Auth capability="delete">
+              <Button
+                onClick={() => props.deleteItem(item.id)}
+                type="submit"
+                intent="danger"
+                text="delete"
+              />
+            </Auth>
           </Card>
         ))}
       </Card>

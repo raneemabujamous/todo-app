@@ -1,7 +1,8 @@
 import React from "react";
-
+import Auth from "../auth/auth";
 const Formtodo = (props) => {
   return (
+    // <Auth capability="read">
     <div>
       {" "}
       <header>
@@ -55,6 +56,7 @@ const Formtodo = (props) => {
         </button> */}
       </label>
     </div>
+    // </Auth>
   );
 };
 
