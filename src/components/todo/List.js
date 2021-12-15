@@ -2,10 +2,15 @@ import React from "react";
 import { useContext, useState, useEffect } from "react";
 import { settingsContext } from "../../settings/context";
 import { Button, Card, Elevation } from "@blueprintjs/core";
-import Auth from "../auth/login";
+import superagent, { saveCookies } from "superagent";
+import cookie from "react-cookies";
+
+import Auth from "../auth/auth";
 export default function List(props) {
   const setting = useContext(settingsContext);
   const [currentPage, setCurrentPage] = useState(1);
+  const API = "https://dimaalabsiauth-api.herokuapp.com";
+
   const [activeList, setActiveList] = useState(
     (setting.show ? props.list : props.incomplete).slice(
       0,
@@ -114,14 +119,13 @@ export default function List(props) {
             >
               Complete : {item.complete.toString()}
             </Button>
-            <Auth capability="delete">
-              <Button
-                onClick={() => props.deleteItem(item.id)}
-                type="submit"
-                intent="danger"
-                text="delete"
-              />
-            </Auth>
+
+            <Button
+              onClick={() => props.deleteItem(item.id)}
+              type="submit"
+              intent="danger"
+              text="delete"
+            />
           </Card>
         ))}
       </Card>

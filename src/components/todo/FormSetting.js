@@ -3,12 +3,15 @@ import { settingsContext } from "../../settings/context";
 
 const Formsetting = (props) => {
   const setting = useContext(settingsContext);
-  const changeNumberOfpeage = (e) => {
-    e.preventDefault();
-    let numberDisplatBerScreen = e.target.value;
-
+  const handleSubmit = (e) => {
+    // e.preventDefault();
+    let numberDisplatBerScreen = e.target.numberDisplatBerScreen.value;
+    let show = e.target.show.value;
+    setting.setShow(show);
+    console.log(show);
+    console.log(numberDisplatBerScreen);
     let obj = {
-      //   show: show,
+      show: show,
       numberDisplatBerScreen: numberDisplatBerScreen,
     };
     setItem(obj);
@@ -21,9 +24,16 @@ const Formsetting = (props) => {
 
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit}>
         <label>number of item in secreen </label>
-        <input type="text" onChange={changeNumberOfpeage} />
+        <input type="text" name="numberDisplatBerScreen" />
+        <label for="show">show completed</label>
+
+        <select name="show">
+          <option value="true">true</option>
+          <option value="false">false</option>
+        </select>
+        <button>submit</button>
       </form>
     </div>
   );

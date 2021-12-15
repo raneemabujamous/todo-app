@@ -17,6 +17,8 @@ function Settings(props) {
     let objectArray = JSON.parse(stringArray);
 
     if (objectArray) {
+      setShow(objectArray.show);
+
       setnumberDisplatBerScreen(Number(objectArray.numberDisplatBerScreen));
     }
     localStorage.clear();
