@@ -7,8 +7,10 @@ import Completecard from "./completeCard.js";
 import FormSetting from "./FormSetting.js";
 import Header from "../Header.js";
 import Auth from "../auth/auth";
-import superagent, { saveCookies } from "superagent";
+import axios from "axios";
+import superagent from "superagent";
 import cookie from "react-cookies";
+import { Button, Card, Elevation } from "@blueprintjs/core";
 
 import { settingsContext } from "../../settings/context";
 
@@ -18,30 +20,25 @@ const ToDo = (props) => {
 
   const [list, setList] = useState([]);
   const [incomplete, setIncomplete] = useState([]);
-  const { handleChange, handleSubmit, handleSubmit2 } = useForm(addItem);
-  const [completedItem, setComplete] = useState(false);
-  const [arrayComplete, setArrayComplete] = useState([]);
-  const [changeSet, setChangeSetting] = useState(false);
-  const [showedList, setShow] = useState([]);
-  const [active, setActive] = useState(1);
+  const { handleChange, handleSubmit } = useForm(addItem);
   const API = "https://dimaalabsiauth-api.herokuapp.com";
 
-  const stateDisplay = show[0];
-
   // function addItem(item) {
-  //   console.log(item);
   //   item.id = uuid();
   //   item.complete = false;
   //   setList([...list, item]);
   // }
+
   async function addItem(item) {
-    const token = cookie.load("token");
-    let respone = await superagent
-      .post(`${API}/todo`, item)
-      .set("authorization", `Bearer ${token}`);
-  }
-  function changeSettingContext() {
-    setChangeSetting(true);
+    try {
+      const token = cookie.load("token");
+      let respone = await axios
+        .post(`${API}/todo`, item)
+        .set("authorization", `Bearer ${token}`);
+      console.log(respone, "00000000000000000");
+    } catch (e) {
+      console.error("error", e);
+    }
   }
   async function deleteItem(id) {
     const token = cookie.load("token");
@@ -49,7 +46,6 @@ const ToDo = (props) => {
       .delete(`${API}/todo?index=${id}`)
       .set("authorization", `Bearer ${token}`);
   }
-
   async function toggleComplete(id) {
     const token = cookie.load("token");
     let items = await props.list.map((item, index) => {
@@ -73,16 +69,9 @@ const ToDo = (props) => {
       .put(`${API}/todo?index=${id}`, obj)
       .set("authorization", `Bearer ${token}`);
 
-    setList(respone.body.todo);
+    props.setList(respone.body.todo);
   }
 
-  // useEffect(() => {
-  //   let incompleteCount = list.filter((item) => !item.complete).length;
-  //   setIncomplete(incompleteCount);
-  //   document.title = `To Do List: ${incomplete}`;
-  //   let filterArr = list.filter((item) => item.complete === false);
-  //   show ? setShow(filterArr) : setShow(list);
-  // }, [list]);
   useEffect(async () => {
     const token = cookie.load("token");
     let respone = await superagent
@@ -92,94 +81,75 @@ const ToDo = (props) => {
     props.setList(respone.body.todo);
   }, [props.list]);
 
-  const completed = () => {
-    const arr = [];
-    list.map((e) => {
-      if (e.complete) {
-        arr.push(e);
-      }
-    });
-    setComplete(true);
-    console.log(arr);
-    setArrayComplete(arr);
-  };
   return (
     <>
-      {/* <Formtodo
-          handleSubmit={handleSubmit}
-          handleChange={handleChange}
-          incomplete={incomplete}
-          completed={completed}
-          changeSettingContext={changeSettingContext}
-        /> */}
-      <div>
-        {" "}
-        <header>
-          <h1>To Do List: {incomplete} items pending</h1>
-        </header>
-        <form onSubmit={handleSubmit}>
-          <h2>Add To Do Item</h2>
+      <Card interactive={true} elevation={Elevation.TWO}>
+        <div className="mainsec">
+          <h1>To Do List ({incomplete})</h1>
 
-          <label>
-            <span>To Do Item</span>
-            <input
-              onChange={handleChange}
-              name="text"
-              type="text"
-              placeholder="Item Details"
+          <div className="mainCards">
+            <form onSubmit={handleSubmit}>
+              <h2>Add To Do Item</h2>
+
+              <label>
+                <span>To Do Item</span>
+                <input
+                  onChange={handleChange}
+                  name="text"
+                  type="text"
+                  placeholder="Item Details"
+                  class="bp3-input .modifier"
+                  type="text"
+                  dir="auto"
+                />
+              </label>
+
+              <label>
+                <span>Assigned To</span>
+                <input
+                  class="bp3-input .modifier"
+                  type="text"
+                  onChange={handleChange}
+                  name="assignee"
+                  type="text"
+                  placeholder="Assignee Name"
+                  dir="auto"
+                />
+              </label>
+
+              <label>
+                <span>Difficulty</span>
+
+                <input
+                  onChange={handleChange}
+                  defaultValue={3}
+                  type="range"
+                  min={1}
+                  max={5}
+                  name="difficulty"
+                  dir="auto"
+                />
+              </label>
+
+              <label>
+                <Button
+                  data-testid="button-test"
+                  type="submit"
+                  rightIcon="arrow-right"
+                  intent="success"
+                  text="Add Item"
+                />
+              </label>
+            </form>
+
+            <List
+              list={list}
+              toggleComplete={toggleComplete}
+              deleteItem={deleteItem}
             />
-          </label>
-
-          <label>
-            <span>Assigned To</span>
-            <input
-              onChange={handleChange}
-              name="assignee"
-              type="text"
-              placeholder="Assignee Name"
-            />
-          </label>
-
-          <label>
-            <span>Difficulty</span>
-            <input
-              onChange={handleChange}
-              defaultValue={3}
-              type="range"
-              min={1}
-              max={5}
-              name="difficulty"
-            />
-          </label>
-
-          <label>
-            <button type="submit">Add Item</button>
-          </label>
-        </form>
-        <label>
-          <button type="submit" onClick={completed}>
-            completed item
-          </button>
-          {/* <button type="submit" onClick={props.changeSettingContext}>
-          change setting
-        </button> */}
-        </label>
-      </div>
-
-      <List
-        incomplete={incomplete}
-        list={list}
-        toggleComplete={toggleComplete}
-        deleteItem={deleteItem}
-      />
-
-      {completedItem && (
-        <Completecard completed={completed} arrayComplete={arrayComplete} />
-      )}
-      {changeSet && (
-        <FormSetting handleSubmit={handleSubmit2} handleChange={handleChange} />
-      )}
-      {/* <Header changeSettingContext={changeSettingContext} /> */}
+          </div>
+        </div>
+      </Card>
       <FormSetting />
     </>
   );
