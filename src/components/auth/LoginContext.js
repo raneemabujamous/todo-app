@@ -1,90 +1,84 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import superagent from "superagent";
+import base64 from "base-64";
 import cookie from "react-cookies";
 import jwt from "jsonwebtoken";
 
-const testUsers = {
-  admin: {
-    password: "password",
-    name: "Administrator",
-    role: "admin",
-    capabilities: ["create", "read", "update", "delete"],
-  },
-  editor: {
-    password: "password",
-    name: "Editor",
-    role: "editor",
-    capabilities: ["read", "update"],
-  },
-  writer: {
-    password: "password",
-    name: "Writer",
-    role: "writer",
-    capabilities: ["create"],
-  },
-};
-
 export const LoginContext = React.createContext();
+const API = "https://dimaalabsiauth-api.herokuapp.com";
+export default function LoginProvider(props) {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState({});
 
-class LoginProvider extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loggedIn: false,
-      can: this.can,
-      login: this.login,
-      logout: this.logout,
-      user: { capabilities: [] },
-    };
-  }
-
-  can = (capability) => {
-    return this?.state?.user?.capabilities?.includes(capability);
-  };
-
-  login = (username, password) => {
-    if (testUsers[username]) {
-      // Create a "good" token, like you'd get from a server
-      const token = jwt.sign(
-        testUsers[username],
-        process.env.REACT_APP_SECRET || "raneem"
-      );
-      this.validateToken(token);
-    }
-  };
-
-  logout = () => {
-    this.setLoginState(false, null, {});
-  };
-
-  validateToken = (token) => {
+  const login = async (username, password) => {
     try {
-      let user = jwt.verify(token, process.env.REACT_APP_SECRET || "raneem");
-      this.setLoginState(true, token, user);
-    } catch (e) {
-      this.setLoginState(false, null, {});
-      console.log("Token Validation Error", e);
+      const response = await superagent
+        .post(`${API}/signin`)
+        .set(
+          "authorization",
+          `Basic ${base64.encode(`${username}:${password}`)}`
+        );
+      console.log(response.body);
+      validateMyToken(response.body.token);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const signUp = async (username, password, role) => {
+    try {
+      let obj = {
+        username: username,
+        password: password,
+        role: role,
+      };
+      const response = await superagent.post(`${API}/signup`, obj);
+      console.log(response.body);
+      validateMyToken(response.body.token);
+    } catch (err) {
+      console.log(err);
     }
   };
 
-  setLoginState = (loggedIn, token, user) => {
-    cookie.save("auth", token);
-    this.setState({ token, loggedIn, user });
+  useEffect(() => {
+    const myTokenCookie = cookie.load("token");
+    console.log("myTokenCookie: ", myTokenCookie);
+    console.log("initial render here !!");
+    validateMyToken(myTokenCookie);
+  }, []);
+
+  function validateMyToken(token) {
+    if (token) {
+      const user = jwt.decode(token);
+
+      setLoginState(true, user);
+      cookie.save("token", token);
+    } else {
+      setLoginState(false, {});
+    }
+  }
+
+  const setLoginState = (isLoggedIn, user) => {
+    setLoggedIn(isLoggedIn);
+    setUser(user);
   };
 
-  componentDidMount() {
-    const qs = new URLSearchParams(window.location.search);
-    const cookieToken = cookie.load("auth");
-    const token = qs.get("token") || cookieToken || null;
-    this.validateToken(token);
-  }
+  const logout = () => {
+    setLoggedIn(false);
+    setUser({});
+    cookie.remove("token");
+  };
 
-  render() {
-    return (
-      <LoginContext.Provider value={this.state}>
-        {this.props.children}
-      </LoginContext.Provider>
-    );
-  }
+  const state = {
+    loggedIn: loggedIn,
+    login: login,
+    logout: logout,
+    user: user,
+    signUp: signUp,
+  };
+
+  return (
+    <LoginContext.Provider value={state}>
+      {props.children}
+    </LoginContext.Provider>
+  );
 }
-
-export default LoginProvider;

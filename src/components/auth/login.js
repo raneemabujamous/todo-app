@@ -1,50 +1,96 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { When } from "react-if";
 
 import { LoginContext } from "./LoginContext";
 
-class Login extends React.Component {
-  static contextType = LoginContext;
-
-  constructor(props) {
-    super(props);
-    this.state = { username: "", password: "" };
-  }
-
-  handleChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+function LoginForm() {
+  const signup = () => {
+    window.location.href = "/signup";
   };
+  let context = useContext(LoginContext);
 
-  handleSubmit = (e) => {
+  let [userName, setUserName] = useState("");
+  let [password, setPassword] = useState("");
+
+  const handleInputUser = (e) => {
+    setUserName(e.target.value);
+  };
+  const handleInputPass = (e) => {
+    setPassword(e.target.value);
+  };
+  const handlerSubmit = async (e) => {
     e.preventDefault();
-    this.context.login(this.state.username, this.state.password);
+
+    await context.login(userName, password);
+    window.location.href = "/";
   };
+  return (
+    <>
+      <When condition={!context.loggedIn}>
+        <div>
+          <header>
+            <nav className="bp3-navbar .modifier bp3-dark">
+              <div className="bp3-navbar-group bp3-align-left">
+                <div className="bp3-navbar-heading">TO-DO</div>
+              </div>
+              <div className="bp3-navbar-group bp3-align-right"></div>
+            </nav>
+          </header>
+          <section className="ftco-section">
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-md-6 col-lg-5">
+                  <div className="login-wrap p-4 p-md-5">
+                    <div className="icon d-flex align-items-center justify-content-center">
+                      <span className="fa fa-user-o">S-IN</span>
+                    </div>
+                    <h3 className="text-center mb-4">Have an account?</h3>
+                    <form onSubmit={handlerSubmit}>
+                      <div className="form-group">
+                        <input
+                          onChange={handleInputUser}
+                          type="text"
+                          className="form-control rounded-left"
+                          placeholder="Username"
+                          required
+                        />
+                      </div>
+                      <div className="form-group d-flex">
+                        <input
+                          onChange={handleInputPass}
+                          type="password"
+                          className="form-control rounded-left"
+                          placeholder="Password"
+                          required
+                        />
+                      </div>
 
-  render() {
-    return (
-      <>
-        <When condition={this.context.loggedIn}>
-          <button onClick={this.context.logout}>Log Out</button>
-        </When>
-
-        <When condition={!this.context.loggedIn}>
-          <form onSubmit={this.handleSubmit}>
-            <input
-              placeholder="UserName"
-              name="username"
-              onChange={this.handleChange}
-            />
-            <input
-              placeholder="password"
-              name="password"
-              onChange={this.handleChange}
-            />
-            <button>Login</button>
-          </form>
-        </When>
-      </>
-    );
-  }
+                      <br />
+                      <div className="form-group">
+                        <button
+                          type="submit"
+                          className="btn btn-primary rounded submit p-3 px-5"
+                        >
+                          Get Started
+                        </button>
+                        <button
+                          className="btn btn-primary rounded submit p-3 px-5"
+                          style={{ margin: "0 0 0 190px" }}
+                          onClick={signup}
+                        >
+                          Sign-Up
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </When>
+    </>
+  );
 }
 
-export default Login;
+export default LoginForm;

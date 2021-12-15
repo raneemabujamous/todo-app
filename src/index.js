@@ -1,13 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import App from './app.js';
+import LoginProvider, { LoginContext } from "./components/auth/LoginContext";
+import App from "./app.js";
 
 class Main extends React.Component {
   render() {
-    return <App />;
+    return (
+      <LoginProvider>
+        <App />
+      </LoginProvider>
+    );
   }
 }
 
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById("root");
 ReactDOM.render(<Main />, rootElement);
