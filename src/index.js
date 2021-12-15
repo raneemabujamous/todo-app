@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import LoginProvider, { LoginContext } from "./components/auth/LoginContext";
+import LoginProvider from "./components/auth/LoginContext";
 import App from "./app.js";
 
 class Main extends React.Component {

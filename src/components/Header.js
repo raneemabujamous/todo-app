@@ -1,5 +1,4 @@
-import React from "react";
-import { Navbar, Button, Alignment } from "@blueprintjs/core";
+import React, { useContext } from "react";
 import { LoginContext } from "../components/auth/LoginContext";
 
 export default function Header(props) {

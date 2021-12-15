@@ -2,13 +2,11 @@ import React from "react";
 import { useContext, useState, useEffect } from "react";
 import { settingsContext } from "../../settings/context";
 import { Button, Card, Elevation } from "@blueprintjs/core";
-import superagent, { saveCookies } from "superagent";
-import cookie from "react-cookies";
-
-import Auth from "../auth/auth";
-export default function List(props) {
+const promiseFinally = require("promise.prototype.finally");
+promiseFinally.shim();
+function List(props) {
   const setting = useContext(settingsContext);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const API = "https://dimaalabsiauth-api.herokuapp.com";
 
   const [activeList, setActiveList] = useState(
@@ -108,6 +106,26 @@ export default function List(props) {
             <p>
               <b>Difficulty</b> : {item.difficulty}
             </p>
+            {/* <Auth capability="update">
+              <Button onClick={() => props.toggleComplete(item.id)}>
+                {item.complete.toString() === "true" ? (
+                  <div style={{ background: "green" }}>Completed</div>
+                ) : (
+                  <div style={{ background: "pink" }}>Pending</div>
+                )}
+              </Button>{" "}
+            </Auth>
+            <Auth capability="delete">
+              {" "}
+              <Button
+                style={{ background: "#008075" }}
+                intent="danger"
+                onClick={() => props.deleteItem(item.id)}
+              >
+                Delete
+              </Button>
+            </Auth> */}
+
             <Button
               class="@ns-button"
               type="button"
@@ -133,3 +151,4 @@ export default function List(props) {
     </div>
   );
 }
+export default List;
